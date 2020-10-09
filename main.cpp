@@ -2,6 +2,7 @@
 #include<thread>
 #include<vector>
 #include<mutex>
+#include<condition_variable>
 
 class Test {
    int x;
@@ -11,11 +12,20 @@ class Test {
 using namespace std;
 
 std::mutex m;
+condition_variable cv;
+int turn=0;
+
 
 int thread_function(int i) {
-	m.lock();
+	unique_lock<mutex> lk(m);
+	while(turn != i) {
+		cv.wait(lk);
+		std::cout << "thread " << i << " is woke up" << std::endl;
+	}
 	std::cout << "thread " << i << " is running" << std::endl;
-	m.unlock();
+	turn++;
+	// have to use notify_all() because notify_one() will not gurantee to notify the next thread.
+	cv.notify_all(); 
 }
 
 int main() {
