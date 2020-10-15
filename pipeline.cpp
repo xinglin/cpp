@@ -1,3 +1,13 @@
+/*
+ * @author Xing Lin
+ * @date 2020-10-15
+ * 
+ * A sample program, to demonstrate how to build a three-stage data processing pipeline, 
+ * using mutex and condition variables. Each stage could have multiple threads for concurrent
+ * processing. 
+ * 
+ * Data (chunks) flows from file_read_thread to compression threads to encryption threads.
+ */ 
 #include <iostream>
 #include <thread>
 #include <mutex>
