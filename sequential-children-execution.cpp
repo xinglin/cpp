@@ -17,7 +17,7 @@ condition_variable cv;
 int turn=0;
 
 
-int thread_function(int i) {
+void thread_function(int i) {
 	unique_lock<mutex> lk(m);
 	while(turn != i) {
 		cv.wait(lk);
@@ -37,4 +37,6 @@ int main() {
 	
 	for(thread& t: v)
 		t.join();
+	
+	return 0;
 }
