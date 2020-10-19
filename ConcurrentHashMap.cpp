@@ -74,7 +74,18 @@ public:
     // We need to both ensure A->next and B->next is not changed during 
     // our operation, which likely requries double_compare_and_exchange().
     // http://15418.courses.cs.cmu.edu/spring2013/lecture/lockfree/slide_020
-   
+    // 
+    // A different approach was described in this paper, without requiring Double_compare_and_exchange. 
+    //  paper: Nitro: A Fast, Scalable In-Memory Storage Engine for NoSQL Global Secondary Index
+    // "We used a different approach to achieve DoubleCAS without any hardware support. 
+    // Instead of next pointers, we defined a new object type for pointer next reference. 
+    // The reference object holds two values, a node pointer and a isdeleted mark flag. 
+    // Instead of doing CompareAndSwap on the node pointer, we perform CompareAndSwap on 
+    // a pointer to this next reference object. Thus, every time the reference object is swapped, 
+    // two values are atomically swapped. For a non-garbage collected language, other approaches 
+    // such as tagged pointers can be used. The least 48 bits of the 64-bit virtual addresses are 
+    // only used in practice. The MSB bit of the 64-bit pointer address can be used to indicate 
+    // isdeleted flag. This tagging method can avoid the extra memory overhead of pointer reference object."
     void remove(int key) {
         
     }
