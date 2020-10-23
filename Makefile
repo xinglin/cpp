@@ -1,7 +1,7 @@
-default: atomic pipeline sequential
+default: atomic pipeline sequential timer binarysearch stringstream
 
 clean:
-	rm atomic sequential pipeline hashmap
+	rm atomic sequential pipeline hashmap timer binarysearch
 
 atomic:
 	g++ -std=c++11 -o atomic atomic.cpp
@@ -11,3 +11,11 @@ sequential:
 	g++ -std=c++11 -o sequential sequential-children-execution.cpp 
 hashmap:
 	g++ -std=c++11 -o concurrenthashhap ConcurrentHashMap.cpp
+timer:
+	g++ -std=c++11 -o timer timer.cpp
+
+binarysearch:
+	g++ -std=c++11 -o binarysearch binarysearch.cpp
+
+stringstream:
+	g++ -std=c++11 -o stringstream stringstream.cpp
