@@ -1,7 +1,7 @@
-default: atomic pipeline sequential timer binarysearch stringstream
+default: atomic pipeline sequential timer binarysearch stringstream readerwriterlock
 
 clean:
-	rm atomic sequential pipeline hashmap timer binarysearch
+	rm atomic sequential pipeline hashmap timer binarysearch readerwriterlock
 
 atomic:
 	g++ -std=c++11 -o atomic atomic.cpp
@@ -19,3 +19,6 @@ binarysearch:
 
 stringstream:
 	g++ -std=c++11 -o stringstream stringstream.cpp
+
+readerwriterlock:
+	g++ -std=c++11 -o readerwriterlock readerwriterlock.cpp

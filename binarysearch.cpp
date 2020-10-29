@@ -46,5 +46,9 @@ int main() {
 
     int ceil = ceilsearch(v, 5);
     int floor = floorsearch(v, 8);
-    std::cout << "ceil for 5 = " << ceil << ", floor for 8 = " << floor << std::endl; 
+    std::cout << "ceil for 5 = " << ceil << ", floor for 8 = " << floor << std::endl;
+
+    bool flag = false;
+    flag |= true;
+    std::cout << flag << std::endl; 
 }
