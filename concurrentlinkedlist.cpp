@@ -29,7 +29,6 @@ template <typename T>
 struct LinkedList {
     Node<T> *head, *tail;
     mutex mh, mt;
-    condition_variable cv;
     LinkedList() {
         head = new Node<T>();
         tail = head;
@@ -43,11 +42,8 @@ struct LinkedList {
         }
 
         unique_lock<mutex> lk(mh);
-        //unique_lock<mutex> lk2(mt);
         head->next = n;
         head = n;
-        //lk.unlock();
-        //cv.notify_one();     
     }
 
     bool empty() {
@@ -56,11 +52,7 @@ struct LinkedList {
     }
 
     bool remove(T& ret) {
-        unique_lock<mutex> lk(mh);
-        //unique_lock<mutex> lk2(mt);
-        
-        //while(tail == head && complete == false)
-        //    cv.wait(lk);
+        unique_lock<mutex> lk2(mt);
 
         if(tail == head)
             return false;
@@ -113,17 +105,18 @@ void removelist(int i) {
     mcout.unlock();
 }
 
-const int THREAD_NUM = 4;
+const int THREAD_NUM = 8;
 int main() {
 
     vector<thread> producers, consumers;
     
     for(int i=0; i < THREAD_NUM; i++) {
         producers.push_back(thread(addlist, i));
+        consumers.push_back(thread(removelist, i));
     }
 
     for(int i=0; i < THREAD_NUM; i++) {
-        consumers.push_back(thread(removelist, i));
+        
     }
 
     for(int i=0; i < THREAD_NUM; i++) {
