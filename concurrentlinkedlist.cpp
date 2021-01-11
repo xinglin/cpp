@@ -7,6 +7,11 @@
  * 
  */ 
 #include <iostream>
+#include <mutex>
+#include <thread>
+#include <vector>
+
+using namespace std;
 
 
 template <typename T>
@@ -18,74 +23,113 @@ struct Node {
     Node(T v): val(v), next(nullptr) {}
 };
 
+atomic<bool> complete {false};
+
 template <typename T>
 struct LinkedList {
     Node<T> *head, *tail;
+    mutex mh, mt;
+    condition_variable cv;
     LinkedList() {
-        head = nullptr;
-        tail = nullptr;
+        head = new Node<T>();
+        tail = head;
     }
 
     void add(T v) {
         Node<T>* n = new Node<T> (v);
-        
-        if(head == nullptr) {
-            head = n;
-            tail = n;
-        } else {
-            head->next = n;
-            head = n;
+        if(n == nullptr) {
+            cerr << "new error in add() " << endl;
+            return;
         }
+
+        unique_lock<mutex> lk(mh);
+        //unique_lock<mutex> lk2(mt);
+        head->next = n;
+        head = n;
+        //lk.unlock();
+        //cv.notify_one();     
     }
 
     bool empty() {
-        return tail == nullptr;
+        unique_lock<mutex> lk(mh);
+        return tail == head;
     }
 
     bool remove(T& ret) {
-        if(tail == nullptr)
+        unique_lock<mutex> lk(mh);
+        //unique_lock<mutex> lk2(mt);
+        
+        //while(tail == head && complete == false)
+        //    cv.wait(lk);
+
+        if(tail == head)
             return false;
 
-        Node<T>* n = tail;
+        Node<T>* n = tail->next;
+        if( n == nullptr ) {
+            cerr << "n is nullptr" << endl;
+            exit(1);
+        }
+
         ret = n->val;
 
+        Node<T>* prev = tail;
         tail = tail->next;
-        // if we have an empty list.
-        if(tail == nullptr)
-            head = nullptr;
-
-        delete n;
+        delete prev;
+        
         return true;
     }
 };
 
-using namespace std;
+LinkedList<int> ll;
+const int N = 1000000;
+void addlist(int i) {
+    cout << "producer " << i << " starts" << endl;
+    for(int i=0; i < N; i++)
+        ll.add(i);
+    cout << "producer " << i << " finishes " << endl;
+}
+
+
+void removelist(int i) {
+    cout << "consumer " << i << " starts " << endl;
+    int val = -1;
+    while( ll.remove(val) ); 
+        
+    cout << "consumer " << i << " last fetched " << val << endl;
+    
+}
 
 int main() {
 
-    LinkedList<int> ll;
-
-    for(int i=0; i < 10; i++)
-        ll.add(i);
-
-    for(int i=0; i < 14; i++) {
-        int val;
-        if(ll.remove(val))
-            cout << val << ' ';
-        else
-            cout << "[empty] ";
-    }
-
-    for(int i=0; i < 10; i++)
-        ll.add(i);
-
-    for(int i=0; i < 14; i++) {
-        int val;
-        if(ll.remove(val))
-            cout << val << ' ';
-        else
-            cout << "remove return false" << endl;
-    }
     
+    /*
+    vector<thread> producers, consumers;
+    
+    for(int i=0; i < 1; i++) {
+        producers.push_back(thread(addlist, i));
+        consumers.push_back(thread(removelist, i));
+    }
+
+    for(int i=0; i < 1; i++) {
+        producers[i].join();
+    }
+    cout << "producers complete " << endl;
+
+    complete = true;
+
+    for(int i=0; i < 1; i++) {
+        consumers[i].join();
+    }
+
+    cout << "consumers complete " << endl;
+    */
+
+
+   addlist(0);
+   removelist(0);
+
+   addlist(0);
+   removelist(0);
     return 0;
 }
