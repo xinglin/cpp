@@ -28,7 +28,7 @@ struct Chunk {
     Chunk(int id, int s): id(id), size(s), checksum(0), buf(NULL) {}
 };
 
-// mutex/cv for communication between compression thread and encryption thread.
+// mutex/cv for communication between file read thread and compression thread.
 queue<Chunk*> cq;   // compression queue
 ::mutex m;
 ::condition_variable cv_producer;

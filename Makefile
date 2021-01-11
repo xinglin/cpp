@@ -22,3 +22,6 @@ stringstream:
 
 readerwriterlock:
 	g++ -std=c++11 -o readerwriterlock readerwriterlock.cpp
+
+concurrentlinkedlist:
+	g++ -std=c++11 -g -o concurrentlinkedlist concurrentlinkedlist.cpp
