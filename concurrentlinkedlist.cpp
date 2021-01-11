@@ -83,53 +83,69 @@ struct LinkedList {
 
 LinkedList<int> ll;
 const int N = 1000000;
+mutex mcout;
 void addlist(int i) {
+    mcout.lock();
     cout << "producer " << i << " starts" << endl;
+    mcout.unlock();
+    
     for(int i=0; i < N; i++)
         ll.add(i);
+
+    mcout.lock();    
     cout << "producer " << i << " finishes " << endl;
+    mcout.unlock();
 }
 
 
 void removelist(int i) {
+    mcout.lock();
     cout << "consumer " << i << " starts " << endl;
-    int val = -1;
-    while( ll.remove(val) ); 
-        
-    cout << "consumer " << i << " last fetched " << val << endl;
+    mcout.unlock();
     
+    
+    int val = -1;
+    while(complete == false)
+        while( ll.remove(val) ); 
+
+    mcout.lock();    
+    cout << "consumer " << i << " last fetched " << val << endl;
+    mcout.unlock();
 }
 
+const int THREAD_NUM = 4;
 int main() {
 
-    
-    /*
     vector<thread> producers, consumers;
     
-    for(int i=0; i < 1; i++) {
+    for(int i=0; i < THREAD_NUM; i++) {
         producers.push_back(thread(addlist, i));
+    }
+
+    for(int i=0; i < THREAD_NUM; i++) {
         consumers.push_back(thread(removelist, i));
     }
 
-    for(int i=0; i < 1; i++) {
+    for(int i=0; i < THREAD_NUM; i++) {
         producers[i].join();
     }
     cout << "producers complete " << endl;
 
     complete = true;
 
-    for(int i=0; i < 1; i++) {
+    for(int i=0; i < THREAD_NUM; i++) {
         consumers[i].join();
     }
 
     cout << "consumers complete " << endl;
-    */
+    
 
-
+/*
    addlist(0);
    removelist(0);
 
    addlist(0);
    removelist(0);
+   */
     return 0;
 }
